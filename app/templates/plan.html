@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}{{ workout.title }}{% endblock %}
+{% block content %}
+<a class="back" href="/dashboard">← All plans</a>
+<div class="page-heading plan-heading"><div><span class="eyebrow">YOUR 7-DAY PLAN · VERSION {{ version.number }}</span><h1>{{ workout.title }}</h1><p>{{ workout.summary }}</p><div class="chips"><span class="chip">{{ plan.goal|title }}</span><span class="chip">{{ plan.days_available }} workout days</span><span class="chip">{{ plan.minutes_per_day }} min</span></div></div><a class="button outline" href="/plans/{{ plan.id }}/export.pdf">Download latest PDF ↓</a></div>
+<div class="plan-layout"><div>
+  <div class="section-head"><h2>The week ahead</h2><span>Warm-up · work · recovery</span></div>
+  <div class="day-grid">
+    {% for day in workout.days|sort(attribute='day_number') %}
+    <article class="panel day-card {% if day.is_rest_day %}recovery{% endif %}">
+      <div class="day-top"><span class="eyebrow">DAY {{ '%02d'|format(day.day_number) }}</span><span class="badge">{{ 'RECOVERY' if day.is_rest_day else 'WORKOUT' }}</span></div>
+      <h3>{{ day.focus }}</h3><p class="muted"><strong>Warm-up:</strong> {{ day.warmup }}</p>
+      {% if day.exercises %}<ul class="exercise-list">{% for ex in day.exercises %}<li><strong>{{ ex.name }}</strong><span>{{ ex.sets }} sets · {{ ex.reps_or_duration }} · {{ ex.rest_seconds }}s rest</span></li>{% endfor %}</ul>{% endif %}
+      <p class="muted"><strong>Cooldown:</strong> {{ day.cooldown }}</p><p class="day-note">{{ day.note }}</p>
+    </article>
+    {% endfor %}
+  </div>
+  <div class="panel tip"><span class="eyebrow">SMALL HABITS MATTER</span><h2>Nutrition & recovery tip</h2><p>{{ workout.nutrition_tip }}</p></div>
+</div><aside class="sidebar">
+  <section class="panel side-card"><span class="eyebrow">MAKE IT YOURS</span><h2>Adjust this plan</h2><p>Tell FitBuddy what to change. Each update keeps the earlier version.</p>
+    <form method="post" action="/plans/{{ plan.id }}/revise"><input type="hidden" name="csrf" value="{{ csrf_token }}"><label>What would you change?<textarea name="feedback" rows="4" minlength="4" maxlength="600" required placeholder="More low-impact cardio and a longer recovery day"></textarea></label><button class="button wide" {% if not ai_ready %}disabled{% endif %}>Update plan →</button></form>
+  </section>
+  <section class="panel side-card"><span class="eyebrow">KEEP TRACK</span><h2>Weekly check-in</h2>
+    <form method="post" action="/plans/{{ plan.id }}/check-ins"><input type="hidden" name="csrf" value="{{ csrf_token }}"><label>Workout days completed<input type="number" name="completed_days" min="0" max="7" value="0" required></label><label>Energy (1–5)<input type="number" name="energy" min="1" max="5" value="3" required></label><label>Notes<textarea name="notes" rows="3" maxlength="500" placeholder="What felt good or difficult?"></textarea></label><button class="button outline wide">Save check-in</button></form>
+    {% if check_ins %}<div class="history"><h3>Recent check-ins</h3>{% for item in check_ins[:4] %}<p><strong>{{ item.completed_days }}/7 days</strong> · energy {{ item.energy }}/5<br><small>{{ item.created_at.strftime('%d %b %Y') }}{% if item.notes %} · {{ item.notes }}{% endif %}</small></p>{% endfor %}</div>{% endif %}
+  </section>
+  <section class="panel side-card"><span class="eyebrow">YOUR HISTORY</span><h2>Versions</h2><div class="version-list">{% for item in versions %}<a href="/plans/{{ plan.id }}/versions/{{ item.number }}" {% if item.id == version.id %}class="selected" aria-current="page"{% endif %}>Version {{ item.number }}<small>{{ item.created_at.strftime('%d %b %Y') }}</small></a>{% endfor %}</div>{% if version.feedback %}<p class="muted small">Requested change: {{ version.feedback }}</p>{% endif %}</section>
+</aside></div>
+{% endblock %}

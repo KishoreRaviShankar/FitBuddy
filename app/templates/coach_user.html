@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block title %}{{ member.name }}{% endblock %}
+{% block content %}
+<a class="back" href="/coach">← Coach overview</a><div class="page-heading"><div><span class="eyebrow">MEMBER ACTIVITY</span><h1>{{ member.name }}</h1><p>{{ member.email }} · Joined {{ member.created_at.strftime('%d %b %Y') }}</p></div></div>
+<div class="cards">{% for plan in member.plans %}<article class="panel plan-card"><span class="chip">{{ plan.goal|title }}</span><h3>{{ plan.days_available }} days per week</h3><p>{{ plan.experience|title }} · {{ plan.location|title }} · {{ plan.minutes_per_day }} min</p><p class="muted small">{{ plan.versions|length }} versions · {{ plan.check_ins|length }} check-ins</p><a href="/coach/plans/{{ plan.id }}">View full plan →</a><div class="history"><h4>Revision history</h4>{% for v in plan.versions %}<p>Version {{ v.number }} · {{ v.created_at.strftime('%d %b %Y') }}{% if v.feedback %}<br><small>Feedback: {{ v.feedback }}</small>{% endif %}</p>{% endfor %}<h4>Check-ins</h4>{% for c in plan.check_ins|reverse %}<p>{{ c.completed_days }}/7 days · energy {{ c.energy }}/5<br><small>{{ c.created_at.strftime('%d %b %Y') }}{% if c.notes %} · {{ c.notes }}{% endif %}</small></p>{% else %}<p>No check-ins yet.</p>{% endfor %}</div></article>{% else %}<p>No plans yet.</p>{% endfor %}</div>
+{% endblock %}

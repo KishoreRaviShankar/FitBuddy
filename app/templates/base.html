@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}FitBuddy{% endblock %} · FitBuddy</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='/style.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/"><span class="brandmark">F</span> FitBuddy <small>YOUR TRAINING SPACE</small></a>
+    <nav aria-label="Main navigation">
+      {% if user %}
+        <a href="/dashboard">My plans</a>
+        <a href="/plans/new">Create plan</a>
+        {% if user.role == 'coach' %}<a href="/coach">Coach view</a>{% endif %}
+        <form method="post" action="/logout" class="inline"><input type="hidden" name="csrf" value="{{ csrf_token }}"><button class="linkbutton">Sign out</button></form>
+      {% else %}
+        <a href="/login">Sign in</a><a href="/register" class="nav-action">Get started</a>
+      {% endif %}
+    </nav>
+  </header>
+  <main class="container">
+    {% if flash %}<div class="notice" role="status">{{ flash }}</div>{% endif %}
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="footer">FitBuddy helps you organize general fitness routines. Stop if an activity causes pain and seek qualified advice when needed.</footer>
+</body>
+</html>

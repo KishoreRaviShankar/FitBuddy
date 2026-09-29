@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}My plans{% endblock %}
+{% block content %}
+<div class="page-heading"><div><span class="eyebrow">YOUR TRAINING SPACE</span><h1>Hi, {{ user.name }}.</h1><p>Pick up where you left off, or start a fresh week.</p></div><a class="button" href="/plans/new">+ Create a plan</a></div>
+{% if not ai_ready %}<div class="notice">Gemini is not configured yet. Add your API key to <code>.env</code> to create a plan.</div>{% endif %}
+<section class="section-head"><h2>Your plans</h2><span>{{ plans|length }} total</span></section>
+{% if plans %}
+<div class="cards">
+  {% for plan in plans %}
+  <a class="panel plan-card" href="/plans/{{ plan.id }}">
+    <span class="chip">{{ plan.goal|title }}</span><span class="date">{{ plan.created_at.strftime('%d %b %Y') }}</span>
+    <h3>{{ plan.days_available }} workout days per week</h3>
+    <p>{{ plan.location|title }} · {{ plan.minutes_per_day }} min · {{ plan.experience|title }}</p>
+    <div class="card-bottom"><span>{{ plan.versions|length }} version{{ '' if plan.versions|length == 1 else 's' }} · {{ plan.check_ins|length }} check-ins</span><span aria-hidden="true">↗</span></div>
+  </a>
+  {% endfor %}
+</div>
+{% else %}<div class="panel empty"><div class="empty-icon">✳</div><h3>Your first week starts here</h3><p>Tell us about your schedule and get a structured plan you can refine.</p><a class="button" href="/plans/new">Create my first plan</a></div>{% endif %}
+{% endblock %}

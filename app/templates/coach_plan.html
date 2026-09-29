@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block title %}Coach plan review{% endblock %}
+{% block content %}
+<a class="back" href="/coach/users/{{ plan.user_id }}">← {{ plan.owner.name }}</a>
+<div class="page-heading"><div><span class="eyebrow">COACH REVIEW · {{ plan.owner.name }} · VERSION {{ selected.number }}</span><h1>{{ workout.title }}</h1><p>{{ workout.summary }}</p></div></div>
+<div class="plan-layout"><div class="day-grid">{% for day in workout.days|sort(attribute='day_number') %}<article class="panel day-card {% if day.is_rest_day %}recovery{% endif %}"><span class="eyebrow">DAY {{ day.day_number }}</span><h3>{{ day.focus }}</h3><p>Warm-up: {{ day.warmup }}</p><ul class="exercise-list">{% for ex in day.exercises %}<li><strong>{{ ex.name }}</strong><span>{{ ex.sets }} sets · {{ ex.reps_or_duration }} · {{ ex.rest_seconds }}s rest</span></li>{% endfor %}</ul><p>Cooldown: {{ day.cooldown }}</p><p class="day-note">{{ day.note }}</p></article>{% endfor %}</div>
+<aside class="sidebar"><section class="panel side-card"><h2>Nutrition tip</h2><p>{{ workout.nutrition_tip }}</p><h3>Version history</h3>{% for v in plan.versions %}<p><a href="/coach/plans/{{ plan.id }}/versions/{{ v.number }}">Version {{ v.number }}</a> · {{ v.created_at.strftime('%d %b %Y') }}{% if v.feedback %}<br>Feedback: {{ v.feedback }}{% endif %}</p>{% endfor %}</section><section class="panel side-card"><h2>Check-ins</h2>{% for c in plan.check_ins|reverse %}<p>{{ c.completed_days }}/7 days · energy {{ c.energy }}/5{% if c.notes %}<br>{{ c.notes }}{% endif %}</p>{% else %}<p>None yet.</p>{% endfor %}</section></aside></div>
+{% endblock %}
