@@ -71,7 +71,12 @@ def _generate(prompt: str) -> tuple[WorkoutPlan, str]:
         logger.warning("Invalid AI plan: %s", type(exc).__name__)
         raise GenerationError("The generated plan was incomplete. Please try again.") from exc
     except Exception as exc:
-        logger.error("Gemini request failed: %s", type(exc).__name__)
+        logger.error(
+    "Gemini request failed: %s | HTTP %s | %s",
+    type(exc).__name__,
+    getattr(exc, "code", "unknown"),
+    getattr(exc, "message", str(exc)),
+)
         raise GenerationError("The AI service is unavailable. Check your key, model access, and connection, then try again.") from exc
 
 
